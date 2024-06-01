@@ -1,0 +1,161 @@
+﻿@{
+    ViewBag.Title = "Edit Property";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">Konutu Düzenle</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form id="editPropertyForm">
+            <input type="hidden" id="propertyId" value="@ViewBag.PropertyId" />
+
+            <div class="form-group mb-3">
+                <label for="title">İlan Başlığı</label>
+                <input type="text" class="form-control" id="title" name="title" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="description">İlan Açıklaması</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="type">Konut Türü</label>
+                <input type="text" class="form-control" id="type" name="type" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="price">Fiyat</label>
+                <input type="number" class="form-control" id="price" name="price" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="roomCount">Oda Sayısı</label>
+                <input type="number" class="form-control" id="roomCount" name="roomCount" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="squareMeters">Metrekare</label>
+                <input type="number" class="form-control" id="squareMeters" name="squareMeters" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="location">Konum</label>
+                <input type="text" class="form-control" id="location" name="location" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="propertyAge">Bina Yaşı</label>
+                <input type="number" class="form-control" id="propertyAge" name="propertyAge" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="floorCount">Kat Sayısı</label>
+                <input type="number" class="form-control" id="floorCount" name="floorCount" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="propertysFloor">Daire Katı</label>
+                <input type="number" class="form-control" id="propertysFloor" name="propertysFloor" required />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-check-label" for="isSold">Satıldı Mı?</label>
+                <input type="checkbox" class="form-check-input" id="isSold" name="isSold">
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="button" class="btn btn-primary" onclick="saveProperty()">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var token = localStorage.getItem("token");
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+
+            if (token == null) {
+                window.location.href = "/Login";
+            }
+
+            var propertyId = $('#propertyId').val();
+
+            // Get the property details
+            $.ajax({
+                url: ApiBaseUrl + "Properties/" + propertyId,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (response) {
+                    $('#title').val(response.title);
+                    $('#description').val(response.description);
+                    $('#type').val(response.type);
+                    $('#price').val(response.price);
+                    $('#roomCount').val(response.roomCount);
+                    $('#squareMeters').val(response.squareMeters);
+                    $('#location').val(response.location);
+                    $('#propertyAge').val(response.propertyAge);
+                    $('#floorCount').val(response.floorCount);
+                    $('#propertysFloor').val(response.propertysFloor);
+                    $('#isSold').prop('checked', response.isSold);
+                },
+                error: function (xhr, status, error) {
+                    console.log("İlan detayları yüklenirken hata: " + status + " - " + error);
+                }
+            });
+        });
+
+        function saveProperty() {
+            var token = localStorage.getItem("token");
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+            var propertyId = $('#propertyId').val();
+
+            var propertyData = {
+                id: propertyId,
+                title: $('#title').val(),
+                description: $('#description').val(),
+                type: $('#type').val(),
+                price: $('#price').val(),
+                roomCount: $('#roomCount').val(),
+                squareMeters: $('#squareMeters').val(),
+                location: $('#location').val(),
+                propertyAge: $('#propertyAge').val(),
+                floorCount: $('#floorCount').val(),
+                propertysFloor: $('#propertysFloor').val(),
+                isSold: $('#isSold').is(':checked'),
+                categoryID: 2,
+                created: $('#created').val(),
+                updated: new Date().toISOString(),
+                appUserId: getAppUserId(token)
+            };
+
+            $.ajax({
+                url: ApiBaseUrl + "Properties",
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(propertyData),
+                success: function () {
+                    alert("İlan başarıyla güncellendi.");
+                    window.location.href = "/Home/MyListings";
+                },
+                error: function (xhr, status, error) {
+                    console.log("İlan güncellenirken hata: " + status + " - " + error);
+                }
+            });
+        }
+
+        function getAppUserId(token) {
+            var uid = '';
+            var payload = parseJwt(token);
+            uid = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+            return uid;
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
+}

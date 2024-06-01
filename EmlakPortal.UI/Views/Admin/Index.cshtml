@@ -1,0 +1,453 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+<link href="~/css/myadmin.css" rel="stylesheet">
+<div class="row">
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Arsa İlan Sayısı
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="landCountContainer">
+                            <div id="landCountSpinner" class="loadingio-spinner-spinner-nq4q5u6dq7r">
+                                <div class="ldio-x2uulkbinbj">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </div>
+                            <div id="landCount" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-area fa-2x text-gray-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Konut İlan Sayısı
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="propertyCountContainer">
+                            <div id="propertyCountSpinner" class="loadingio-spinner-spinner-nq4q5u6dq7r">
+                                <div class="ldio-x2uulkbinbj">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </div>
+                            <div id="propertyCount" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-home fa-2x text-gray-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Kullanıcı Sayısı
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="userCountContainer">
+                            <div id="userCountSpinner" class="loadingio-spinner-spinner-nq4q5u6dq7r">
+                                <div class="ldio-x2uulkbinbj">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </div>
+                            <div id="userCount" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Admin Sayısı
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="adminCountContainer">
+                            <div id="adminCountSpinner" class="loadingio-spinner-spinner-nq4q5u6dq7r">
+                                <div class="ldio-x2uulkbinbj">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </div>
+                            <div id="adminCount" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8" id="divList">
+        <h4>Kategoriler</h4>
+
+        <table class="table" id="tbCategoryList">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Adı</th>
+                    <th>Durumu</th>
+                    <th>Kayıt T.</th>
+                    <th>Düzenleme T.</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="col-md-4" id="divAddUpdate">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title" id="editHeader">Kategori Ekle</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="txtName">Kategori Adı</label>
+                    <input type="text" class="form-control" id="txtName" />
+                    <input type="hidden" id="txtId" />
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="cbIsActive" />
+                    <label class="form-check-label" for="cbIsActive">Aktif</label>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary btn-sm" id="btnSave">Kaydet</button>
+                    <button class="btn btn-primary btn-sm" id="btnEdit">Düzenle</button>
+                    <button class="btn btn-danger btn-sm" id="btnDelete">Sil</button>
+                    <button class="btn btn-secondary btn-sm" id="btnCancel">Vazgeç</button>
+                </div>
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var apiBaseUrl = "@ViewBag.ApiBaseUrl";
+            var token = localStorage.getItem("token");
+            CategoryList();
+
+            function showLoading(spinnerId, valueId) {
+                $(spinnerId).show();
+                $(valueId).hide();
+            }
+
+            function hideLoading(spinnerId, valueId) {
+                $(spinnerId).hide();
+                $(valueId).show();
+            }
+
+            showLoading("#landCountSpinner", "#landCount");
+            showLoading("#propertyCountSpinner", "#propertyCount");
+            showLoading("#userCountSpinner", "#userCount");
+            showLoading("#adminCountSpinner", "#adminCount");
+
+            function CategoryList() {
+                $.ajax({
+                    url: apiBaseUrl + "Categories",
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    contentType: "application/json",
+                    success: function (data) {
+                        CategoryListToTable(data);
+                    },
+                    error: function (e) {
+                        if (e.status == 401) {
+                            localStorage.removeItem("token");
+                            location.href = "/Login";
+                        }
+                    }
+                });
+            }
+
+            function CategoryListToTable(data) {
+                $("#tbCategoryList tbody").empty();
+                var tr = '';
+                $.each(data, function (i, item) {
+                    var bg = item.isActive ? 'bg-success' : 'bg-danger';
+
+                    if (item.categoryName == "Arsa") {
+                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Lands' + '" class="btn btn-outline-primary btn-sm ">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
+
+                    }
+                    else {
+                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Properties' + '" class="btn btn-outline-primary btn-sm ">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
+                    }
+                });
+                $("#tbCategoryList tbody").append(tr);
+            }
+
+            function FormatDate(d) {
+                var date = new Date(d);
+                var day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+                var mount = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
+                var year = date.getFullYear();
+
+                var hour = date.getHours() > 9 ? date.getHours() : '0' + date.getHours();
+                var minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
+                var second = date.getSeconds() > 9 ? date.getSeconds() : '0' + date.getSeconds();
+
+                var fd = day + "." + mount + "." + year + " " + hour + ":" + minute + ":" + second;
+                return fd
+            }
+
+            $.ajax({
+                url: apiBaseUrl + "Categories/2/Properties",
+                method: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (data) {
+                    $("#propertyCount").text("Toplam Konut: " + data.length);
+                    hideLoading("#propertyCountSpinner", "#propertyCount");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching properties: " + error);
+                    $("#propertyCount").text("Toplam Konut: Hata!");
+                    hideLoading("#propertyCountSpinner", "#propertyCount");
+                }
+            });
+
+            $.ajax({
+                url: apiBaseUrl + "Categories/1/Lands",
+                method: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (data) {
+                    $("#landCount").text("Toplam Arazi: " + data.length);
+                    hideLoading("#landCountSpinner", "#landCount");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching lands: " + error);
+                    $("#landCount").text("Toplam Arazi: Hata!");
+                    hideLoading("#landCountSpinner", "#landCount");
+                }
+            });
+
+            $.ajax({
+                url: apiBaseUrl + "User/List",
+                method: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (data) {
+                    $("#userCount").text("Toplam Kullanıcı: " + data.length);
+                    hideLoading("#userCountSpinner", "#userCount");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching users: " + error);
+                    $("#userCount").text("Toplam Kullanıcı: Hata!");
+                    hideLoading("#userCountSpinner", "#userCount");
+                }
+            });
+
+            $.ajax({
+                url: apiBaseUrl + "User/GetAdminCount",
+                method: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (data) {
+                    $("#adminCount").text("Toplam Admin: " + data.adminCount);
+                    hideLoading("#adminCountSpinner", "#adminCount");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching admins: " + error);
+                    $("#adminCount").text("Toplam Admin: Hata!");
+                    hideLoading("#adminCountSpinner", "#adminCount");
+                }
+            });
+
+            $("#btnSave").click(function () {
+                var categoryName = $("#txtName").val();
+                var isActive = $("#cbIsActive").is(":checked");
+                var category = new Object();
+                category.categoryName = categoryName;
+                category.IsActive = isActive;
+
+                $.ajax({
+                    url: apiBaseUrl + "Categories",
+                    method: "POST",
+                    data: JSON.stringify(category),
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function (data) {
+                        $("#result").show();
+                        if (data.status) {
+                            $("#result").removeClass().addClass("alert alert-success");
+                            CategoryList();
+                        }
+                        else {
+                            $("#result").removeClass().addClass("alert alert-danger");
+                        }
+                        $("#result").html(data.message);
+                        $("#result").fadeOut(3000);
+                    },
+                    error: function (e) {
+                        if (e.status == 401) {
+                            localStorage.removeItem("token");
+                            location.href = "/Login";
+                        }
+                    }
+                });
+
+            });
+            $(document).on("click", ".edit", function () {
+                var id = $(this).attr("id");
+                $.ajax({
+                    url: apiBaseUrl + "Categories/" + id,
+                    method: "GET",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function (data) {
+                        $("#txtId").val(data.id);
+                        $("#txtName").val(data.categoryName);
+                        $("#cbIsActive").prop("checked", data.isActive);
+
+                        $("#btnEdit").show();
+                        $("#btnDelete").show();
+                        $("#btnSave").hide();
+
+                        $("#editHeader").html("Kategori Düzenle - Sil");
+                    },
+                    error: function (e) {
+                        if (e.status == 401) {
+                            localStorage.removeItem("token");
+                            location.href = "/Login";
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $("#btnCancel").click(function () {
+                $("#txtId").val("");
+                $("#txtName").val("");
+                $("#cbIsActive").prop("checked", false);
+                $("#btnEdit").hide();
+                $("#btnDelete").hide();
+                $("#btnSave").show();
+                $("#editHeader").html("Kategori Ekle");
+
+            });
+
+
+            $("#btnEdit").click(function () {
+
+                var id = $("#txtId").val();
+                var categoryName = $("#txtName").val();
+                var isActive = $("#cbIsActive").is(":checked");
+                var category = new Object();
+                category.Id = id;
+                category.categoryName = categoryName;
+                category.IsActive = isActive;
+
+                $.ajax({
+                    url: apiBaseUrl + "Categories",
+                    method: "PUT",
+                    data: JSON.stringify(category),
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function (data) {
+                        $("#result").show();
+                        if (data.status) {
+                            $("#result").removeClass().addClass("alert alert-success");
+                            CategoryList();
+                        }
+                        else {
+                            $("#result").removeClass().addClass("alert alert-danger");
+                        }
+                        $("#result").html(data.message);
+                        $("#result").fadeOut(3000);
+                    },
+                    error: function (e) {
+                        if (e.status == 401) {
+                            localStorage.removeItem("token");
+                            location.href = "/Login";
+                        }
+                    }
+                });
+
+
+            });
+
+            $("#btnDelete").click(function () {
+                console.log("sil");
+                var id = $("#txtId").val();
+                $.ajax({
+                    url: apiBaseUrl + "Categories/" + id,
+                    method: "DELETE",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function (data) {
+                        $("#result").show();
+                        if (data.status) {
+                            $("#result").removeClass().addClass("alert alert-success");
+                            CategoryList();
+                        }
+                        else {
+                            $("#result").removeClass().addClass("alert alert-danger");
+                        }
+                        $("#result").html(data.message);
+                        $("#result").fadeOut(3000);
+                    },
+                    error: function (e) {
+                        if (e.status == 401) {
+                            localStorage.removeItem("token");
+                            location.href = "/Login";
+                        }
+                    }
+                });
+
+
+            });
+        });
+    </script>
+}

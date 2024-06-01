@@ -76,6 +76,14 @@ namespace EmlakPortal.Controllers
             return result;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAdminCount()
+        {
+            var adminCount = (await _userManager.GetUsersInRoleAsync("Admin")).Count;
+            return Ok(new { adminCount });
+        }
+
+
         [HttpPost]
         public async Task<ResultDto> SignIn(LoginDto dto)
         {

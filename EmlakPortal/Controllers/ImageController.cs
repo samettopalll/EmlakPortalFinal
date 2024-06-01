@@ -5,21 +5,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace EmlakPortal.Controllers
 {
     [Route("api/Images")]
     [ApiController]
-    [Authorize]
     public class ImageController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
         ResultDto result = new ResultDto();
-        public ImageController(AppDbContext context, IMapper mapper)
+        public ImageController(AppDbContext context, IMapper mapper, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
         }
         [HttpGet]
         public List<ImageDto> GetList()
@@ -29,7 +31,7 @@ namespace EmlakPortal.Controllers
             return imageDto;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public IActionResult GetById(int id)
         {
             var image = _context.Images.FirstOrDefault(i => i.Id == id);
@@ -40,6 +42,33 @@ namespace EmlakPortal.Controllers
 
             var imageDto = _mapper.Map<ImageDto>(image);
             return Ok(imageDto);
+        }
+
+        [HttpGet("GetImage/{imageName}")]
+        public IActionResult GetImage(string imageName)
+        {
+            try
+            {
+                string uploadsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "uploads");
+                string imagePath = Path.Combine(uploadsFolder, imageName);
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    string dataUrl = $"data:image/jpeg;base64,{base64String}";
+
+                    return Ok(new { ImageUrl = dataUrl });
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 

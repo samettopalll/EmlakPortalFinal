@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "Edit Land";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">İlanı Düzenle</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form id="editLandForm">
+            <input type="hidden" id="landId" value="@ViewBag.LandId" />
+
+            <div class="form-group mb-3">
+                <label for="title">İlan Başlığı</label>
+                <input type="text" class="form-control" id="title" name="title" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="description">İlan Açıklaması</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="type">İlan Türü</label>
+                <input type="text" class="form-control" id="type" name="type" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="price">İlan Fiyatı</label>
+                <input type="number" class="form-control" id="price" name="price" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="squaremeters">İlan Metrekaresi</label>
+                <input type="number" class="form-control" id="squaremeters" name="squaremeters" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="location">İlan Konumu</label>
+                <input type="text" class="form-control" id="location" name="location" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="blocknumber">İlan Ada Numarası</label>
+                <input type="text" class="form-control" id="blocknumber" name="blocknumber" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="parcelnumber">İlan Parsel Numarası</label>
+                <input type="text" class="form-control" id="parcelnumber" name="parcelnumber" required />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-check-label" for="isSold">İlan Satıldı Mı?</label>
+                <input type="checkbox" class="form-check-input" id="isSold" name="isSold">
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="button" class="btn btn-primary" onclick="saveLand()">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var token = localStorage.getItem("token");
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+
+            if (token == null) {
+                window.location.href = "/Login";
+            }
+
+            var landId = $('#landId').val();
+
+            // Get the land details
+            $.ajax({
+                url: ApiBaseUrl + "Lands/" + landId,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (response) {
+                    $('#title').val(response.title);
+                    $('#description').val(response.description);
+                    $('#type').val(response.type);
+                    $('#price').val(response.price);
+                    $('#squaremeters').val(response.squareMeters);
+                    $('#location').val(response.location);
+                    $('#blocknumber').val(response.blockNumber);
+                    $('#parcelnumber').val(response.parcelNumber);
+                    $('#isSold').prop('checked', response.isSold);
+                },
+                error: function (xhr, status, error) {
+                    console.log("İlan detayları yüklenirken hata: " + status + " - " + error);
+                }
+            });
+        });
+
+        function saveLand() {
+            var token = localStorage.getItem("token");
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+            var uid = '';
+            var payload = parseJwt(token);
+            uid = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+            var landId = $('#landId').val();
+
+            var formData = {
+                id: landId,
+                title: $('#title').val(),
+                description: $('#description').val(),
+                type: $('#type').val(),
+                price: $('#price').val(),
+                squareMeters: $('#squaremeters').val(),
+                location: $('#location').val(),
+                blockNumber: $('#blocknumber').val(),
+                parcelNumber: $('#parcelnumber').val(),
+                isSold: $('#isSold').is(':checked'),
+                categoryID: 1, // İlan kategorisi
+                created: $('#created').val(), // Mevcut oluşturulma tarihi
+                updated: new Date().toISOString(), // Güncellenme tarihi
+                appUserId: uid // Kullanıcı kimliği
+            };
+
+            $.ajax({
+                url: ApiBaseUrl + "Lands",
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function () {
+                    alert("İlan başarıyla güncellendi.");
+                    window.location.href = "/Home/MyListings";
+                },
+                error: function (xhr, status, error) {
+                    console.log("İlan güncellenirken hata: " + status + " - " + error);
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Land Details";
+}
+<div class="container">
+    <div id="landDetails" class="row">
+        <div class="col-md-6" id="landDetailsLeft" style="padding-right: 30px;">
+            <h2 id="landTitle" style="margin-bottom: 20px;"></h2>
+            <div id="imageCarousel" class="carousel slide" data-ride="carousel" data-interval="4000">
+                <div class="carousel-inner" id="imageCarouselInner">
+                </div>
+                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Önceki</span>
+                </a>
+                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Sonraki</span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6" id="landDetailsRight" style="padding-left: 30px;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+            var itemId = "@ViewBag.ItemId";
+
+            $.ajax({
+                url: ApiBaseUrl + "Lands/" + itemId,
+                method: "GET",
+                success: function (response) {
+                    renderDetails(response);
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error in loading land details: " + status + " - " + error);
+                }
+            });
+
+            function renderDetails(item) {
+                $("#landTitle").text(item.title);
+
+                var token = localStorage.getItem("token");
+                var userRoles = [];
+                var username = '';
+                if (token == null) {
+                    $(".NotLogined").show();
+                    $(".Logined").hide();
+                } else {
+                    $(".NotLogined").hide();
+                    $(".Logined").show();
+                    var payload = parseJwt(token);
+                    username = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+                    userRoles = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                    $("#UserName").html(username);
+                }
+
+                var sqprice = (item.price / item.squareMeters).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
+                var formattedPrice = item.price.toLocaleString('tr-TR');
+                var detailsHtml = `
+                    <br><br><br>
+                    <strong><p>İlan Sahibi: </strong>${username}</p>
+                    <strong><p>Fiyat:</strong> ${formattedPrice} ₺</p>
+                    <strong><p>m²: </strong>${item.squareMeters}</p>
+                    <strong><p>m² Fiyatı: </strong>${sqprice} ₺</p>
+                    <strong><p>Arsa Tipi:</strong> ${item.type}</p>
+                    <strong><p>Konum:</strong> ${item.location}</p>
+                    <strong><p>Ada Numarası:</strong> ${item.blockNumber}</p>
+                    <strong><p>Parsel Numarası:</strong> ${item.parcelNumber}</p>
+                    <strong><p>Oluşturulma Tarihi:</strong> ${formatDate(item.created)}</p>
+                    <strong><p>Düzenlenme Tarihi:</strong> ${formatDate(item.updated)}</p>
+                    <strong><p>İlan Açıklaması:</strong> ${item.description}</p>
+                `;
+                $("#landDetailsRight").html(detailsHtml);
+
+                var imagesHtml = '';
+                var imageRequests = item.imageUrls.map((imageUrl, index) => {
+                    return $.ajax({
+                        url: ApiBaseUrl + "Images/GetImage/" + imageUrl.split('\\').pop(),
+                        method: "GET",
+                        success: function (response) {
+                            var imageBase64 = response.imageUrl;
+                            imagesHtml += `
+                                <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                    <img src="${imageBase64}" class="d-block w-100 mb-2" alt="${item.title}">
+                                </div>
+                            `;
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error in fetching image: " + status + " - " + error);
+                        }
+                    });
+                });
+
+                $.when.apply($, imageRequests).then(function () {
+                    $("#imageCarouselInner").html(imagesHtml);
+                    $('#imageCarousel').carousel({
+                        interval: 4000,
+                        ride: 'carousel'
+                    });
+                });
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return '';
+                var date = new Date(dateString);
+                var day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+                var month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1);
+                var year = date.getFullYear();
+                var hour = date.getHours() > 9 ? date.getHours() : '0' + date.getHours();
+                var minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
+                var second = date.getSeconds() > 9 ? date.getSeconds() : '0' + date.getSeconds();
+                return day + "." + month + "." + year + " " + hour + ":" + minute + ":" + second;
+            }
+
+            function parseJwt(token) {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "All Lands";
+}
+<div class="container">
+    <div class="row mt-3 mb-3">
+        <div class="col-md-9"></div>
+        <div class="col-md-3 text-end">
+            <div class="d-flex justify-content-end">
+                <input type="text" id="searchInput" class="form-control" style="width: 250px;" placeholder="İlan Başlığına Göre Ara">
+                <button class="btn btn-info ms-2 dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filtrele <img src="https://img.icons8.com/?size=16&id=3VVSgatd5o7W&format=png"/>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item filter-option" id="filterSale" data-type="Satılık">Satılık</a></li>
+                    <li><a class="dropdown-item filter-option" id="filterRent" data-type="Kiralık">Kiralık</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row" id="landList">
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+        var allLands;
+        var imagesData;
+
+        getAllLands();
+
+        function getAllLands() {
+            $.when(
+                $.ajax({
+                    url: ApiBaseUrl + "Lands",
+                    method: "GET",
+                    contentType: "application/json"
+                }),
+                $.ajax({
+                    url: ApiBaseUrl + "Images",
+                    method: "GET",
+                    contentType: "application/json"
+                })
+            ).done(function (landsResponse, imagesResponse) {
+                allLands = landsResponse[0];
+                imagesData = imagesResponse[0];
+                renderLands(allLands, imagesData);
+            }).fail(function () {
+                console.log("Error in fetching land data");
+            });
+        }
+
+        function renderLands(lands, images) {
+            $("#landList").empty();
+            var cards = '';
+
+            $.each(lands, function (i, land) {
+                var bg = land.isSold ? 'bg-success' : 'bg-danger';
+                var landID = land.id;
+
+                var relatedImages = images.filter(img => img.landID === landID);
+
+                if (relatedImages.length === 0) {
+                    console.log(`No image found for land ID: ${landID}`);
+                    return;
+                }
+
+                var card = `
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div id="carousel-${landID}" class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner">
+                    `;
+
+                var imageRequests = relatedImages.map(function (image, j) {
+                    var activeClass = j === 0 ? 'active' : '';
+                    return $.ajax({
+                        url: ApiBaseUrl + "Images/GetImage/" + image.photoUrl.split('\\').pop(),
+                        method: "GET",
+                        success: function (response) {
+                            var imageBase64 = response.imageUrl;
+                            card += `
+                                    <div class="carousel-item ${activeClass}">
+                                        <img src="${imageBase64}" class="d-block w-100 h-100" alt="${land.title}">
+                                    </div>
+                                `;
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error in fetching image: " + status + " - " + error);
+                        }
+                    });
+                });
+
+                $.when.apply($, imageRequests).done(function () {
+                    var formattedPrice = land.price.toLocaleString('tr-TR');
+                    card +=
+                        `
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><strong><a href="/Home/LandDetails/${landID}" style=" text-decoration: none;color: inherit;">${land.title}</a></strong></h5>
+                                    <strong><p class="card-text">Fiyat: </strong>${formattedPrice} ₺</p>
+                                    <strong><p class="card-text">Kayıt Tarihi: </strong>${formatDate(land.created)}</p>
+                                    <strong><p class="card-text">Düzenleme Tarihi: </strong>${formatDate(land.updated)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    cards += card;
+                    $("#landList").html(cards);
+                });
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            var date = new Date(dateString);
+            var day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+            var month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1);
+            var year = date.getFullYear();
+            var hour = date.getHours() > 9 ? date.getHours() : '0' + date.getHours();
+            var minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
+            var second = date.getSeconds() > 9 ? date.getSeconds() : '0' + date.getSeconds();
+            return day + "." + month + "." + year + " " + hour + ":" + minute + ":" + second;
+        }
+
+        $('.filter-option').on('click', function () {
+            var isActive = $(this).hasClass('active');
+            $('.filter-option').removeClass('active');
+            if (!isActive) $(this).addClass('active');
+            filterLands();
+        });
+
+        $('#searchInput').on('keyup', function () {
+            var searchTerm = $(this).val().toLowerCase();
+            filterLands(searchTerm);
+        });
+
+        function filterLands(searchTerm = '') {
+            var activeFilter = $('.filter-option.active').data('type');
+
+            var filteredLands = allLands.filter(function (land) {
+                var matchesFilter = activeFilter ? land.type === activeFilter : true;
+                var matchesSearch = land.title.toLowerCase().includes(searchTerm);
+                return matchesFilter && matchesSearch;
+            });
+
+            renderLands(filteredLands, imagesData);
+        }
+
+    });
+</script>
+}

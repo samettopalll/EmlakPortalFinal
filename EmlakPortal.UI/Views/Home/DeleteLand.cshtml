@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "DeleteLand";
+}
+
+<h1 class="mt-5 text-center">Arsa İlanını Silme İşlemi</h1>
+
+<p class="mt-4 text-center">Aşağıdaki ilanı silmek istediğinize emin misiniz?</p>
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <ul class="list-group" id="landDetails">
+                <li class="list-group-item"><strong>İlan Başlığı: </strong><span id="title"></span></li>
+                <li class="list-group-item"><strong>İlan Açıklaması: </strong><span id="description"></span></li>
+                <li class="list-group-item"><strong>İlan Fiyatı: </strong><span id="price"></span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-4 justify-content-center">
+        <div class="col-md-6">
+            <form id="deleteLandForm">
+                <input type="hidden" id="landId" value="@ViewBag.LandId" />
+                <button type="button" class="btn btn-danger mr-2" onclick="deleteLand()">Evet, Sil</button>
+                <a href="javascript:history.back()" class="btn btn-secondary">Hayır, İptal</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var token = localStorage.getItem("token");
+
+        if (token == null) {
+            window.location.href = "/Login";
+        }
+
+        var landId = $('#landId').val();
+        var apiUrl = '@ViewBag.ApiBaseUrl' + 'Lands/' + landId;
+
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function (response) {
+                $('#title').text(response.title);
+                $('#description').text(response.description);
+                $('#price').text(response.price);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error getting land details: " + status + " - " + error);
+            }
+        });
+    });
+
+    function deleteLand() {
+        var landId = $('#landId').val();
+        var apiUrl = '@ViewBag.ApiBaseUrl' + 'Lands/' + landId;
+
+        $.ajax({
+            url: apiUrl,
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function () {
+                alert("Land listing deleted successfully.");
+                window.location.href = "/Home/MyListings";
+            },
+            error: function (xhr, status, error) {
+                console.log("Error deleting land listing: " + status + " - " + error);
+            }
+        });
+    }
+</script>
