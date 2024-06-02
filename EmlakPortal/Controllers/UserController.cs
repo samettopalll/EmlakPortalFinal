@@ -31,7 +31,6 @@ namespace EmlakPortal.Controllers
             _signInManager = signInManager;
         }
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public List<UserDto> List()
         {
             var users = _userManager.Users.ToList();
@@ -39,7 +38,6 @@ namespace EmlakPortal.Controllers
             return userDtos;
         }
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public UserDto GetById(string id)
         {
             var user = _userManager.Users.Where(s => s.Id == id).SingleOrDefault();

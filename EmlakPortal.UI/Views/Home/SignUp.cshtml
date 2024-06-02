@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = "SignUp";
+}
+
+<div class="row mt-5">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card mb-2">
+            <div class="card-header"><h3>Kaydol</h3></div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="mb-1">Tam Adı</label>
+                    <input type="text" class="form-control" id="txtFullName" />
+                </div>
+                <div class="mb-2">
+                    <label class="mb-1">E-Posta Adresi</label>
+                    <input type="email" class="form-control" id="txtEmail" />
+                </div>
+                <div class="mb-2">
+                    <label class="mb-1">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="txtUserName" />
+                </div>
+                <div class="mb-2">
+                    <label class="mb-1">Parola</label>
+                    <input type="password" class="form-control" id="txtPassword" />
+                </div>
+                <div class="mb-2">
+                    <label class="mb-1">Telefon Numarası</label>
+                    <input type="text" class="form-control" id="txtPhoneNumber" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" id="btnSignUp">Kaydol</button>
+                <button class="btn btn-secondary"><a asp-action="Login" class="link-light" style="text-decoration:none">Oturum Aç</a></button>
+            </div>
+        </div>
+        <div id="result"></div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
+            $("#btnSignUp").click(function () {
+                var username = $("#txtUserName").val();
+                var password = $("#txtPassword").val();
+                var fullname = $("#txtFullName").val();
+                var phonenumber = $("#txtPhoneNumber").val();
+                var email = $("#txtEmail").val();
+
+                if (username == "" || password == "" || fullname == "" || email == "" || phonenumber == "") {
+                    $("#divResult")
+                        .show()
+                        .removeClass()
+                        .addClass("alert alert-danger")
+                        .html("Tüm Alanları Doldurunuz!")
+                        .fadeOut(5000);
+                    return false;
+                }
+                var register = new Object();
+                register.Id = "1";
+                register.UserName = username;
+                register.Password = password;
+                register.FullName = fullname;
+                register.PhoneNumber = phonenumber;
+                register.Email = email;
+
+                $.ajax({
+                    url: ApiBaseUrl + "User/Add",
+                    method: "POST",
+                    data: JSON.stringify(register),
+                    contentType: "application/json",
+                    success: function (data) {
+                        if (data.status) {
+                            location.href = "Login";
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                        $("#result")
+                            .show()
+                            .removeClass()
+                            .addClass("alert alert-danger")
+                            .html("Bir hata oluştu. Lütfen tekrar deneyin.")
+                            .fadeOut(10000);
+                    }
+                });
+
+            });
+        });
+    </script>
+}

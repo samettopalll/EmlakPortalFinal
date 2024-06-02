@@ -119,7 +119,8 @@ namespace EmlakPortal.UI.Controllers
             return View();
         }
 
-        public IActionResult SignIn()
+        [Route("Signup")]
+        public IActionResult SignUp()
         {
             string ApiBaseUrl = _configuration["ApiBaseUrl"]!;
             ViewBag.ApiBaseUrl = ApiBaseUrl;
