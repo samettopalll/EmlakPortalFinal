@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-comments fa-2x text-gray-600"></i>
+                        <i class="fas fa-users fa-2x text-gray-600"></i>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-comments fa-2x text-gray-600"></i>
+                        <i class="fas fa-users-cog fa-2x text-gray-600"></i>
                     </div>
                 </div>
             </div>
@@ -159,6 +159,8 @@
         $(document).ready(function () {
             var apiBaseUrl = "@ViewBag.ApiBaseUrl";
             var token = localStorage.getItem("token");
+            $("#btnEdit").hide();
+            $("#btnDelete").hide();
             CategoryList();
 
             function showLoading(spinnerId, valueId) {
@@ -203,11 +205,11 @@
                     var bg = item.isActive ? 'bg-success' : 'bg-danger';
 
                     if (item.categoryName == "Arsa") {
-                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Lands' + '" class="btn btn-outline-primary btn-sm ">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
+                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="text-light badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Lands' + '" class="btn btn-outline-primary btn-sm mr-2">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
 
                     }
                     else {
-                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Properties' + '" class="btn btn-outline-primary btn-sm ">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
+                        tr += '<tr><td>' + item.id + '</td><td>' + item.categoryName + '</td><td><span class="text-light badge ' + bg + '">' + (item.isActive ? 'Aktif' : 'Pasif') + '</span></td><td>' + FormatDate(item.created) + '</td><td>' + FormatDate(item.updated) + '</td><td><a href="Properties' + '" class="btn btn-outline-primary btn-sm mr-2">İlanlar</a><button class="btn btn-outline-primary btn-sm ms-2 edit" id=' + item.id + '>Düzenle</td></tr>'
                     }
                 });
                 $("#tbCategoryList tbody").append(tr);

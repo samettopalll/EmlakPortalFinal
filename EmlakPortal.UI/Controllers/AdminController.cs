@@ -10,14 +10,23 @@ namespace EmlakPortal.UI.Controllers
         {
             _configuration = configuration;
         }
+
         public IActionResult Index()
         {
             string ApiBaseUrl = _configuration["ApiBaseUrl"]!;
             ViewBag.ApiBaseUrl = ApiBaseUrl;
             return View();
         }
+
         public IActionResult Adverts()
         {
+            string ApiBaseUrl = _configuration["ApiBaseUrl"]!;
+            ViewBag.ApiBaseUrl = ApiBaseUrl;
+            return View();
+        }
+
+        public IActionResult Users() {
+
             string ApiBaseUrl = _configuration["ApiBaseUrl"]!;
             ViewBag.ApiBaseUrl = ApiBaseUrl;
             return View();

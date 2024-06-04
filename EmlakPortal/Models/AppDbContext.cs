@@ -7,6 +7,7 @@ namespace EmlakPortal.Models
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
+            this.Database.SetCommandTimeout(999999);
         }
 
         public DbSet<Category> Categories { get; set; }

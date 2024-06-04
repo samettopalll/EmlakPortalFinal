@@ -1,25 +1,27 @@
 ﻿
 @{
     ViewData["Title"] = "SignUp";
+    Layout = "_LayoutLogin";
 }
+<link href="/css/log.css" rel="stylesheet" />
 
 <div class="row mt-5">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <div class="card mb-2">
-            <div class="card-header"><h3>Kaydol</h3></div>
+        <div class="card border-dark bg-secondary text-white mb-2">
+            <div class="card-header mt-2"><h3>Kaydol</h3></div>
             <div class="card-body">
                 <div class="mb-2">
                     <label class="mb-1">Tam Adı</label>
                     <input type="text" class="form-control" id="txtFullName" />
                 </div>
                 <div class="mb-2">
-                    <label class="mb-1">E-Posta Adresi</label>
-                    <input type="email" class="form-control" id="txtEmail" />
-                </div>
-                <div class="mb-2">
                     <label class="mb-1">Kullanıcı Adı</label>
                     <input type="text" class="form-control" id="txtUserName" />
+                </div>
+                <div class="mb-2">
+                    <label class="mb-1">E-Posta Adresi</label>
+                    <input type="email" class="form-control" id="txtEmail" />
                 </div>
                 <div class="mb-2">
                     <label class="mb-1">Parola</label>
@@ -32,7 +34,7 @@
             </div>
             <div class="card-footer">
                 <button class="btn btn-primary" id="btnSignUp">Kaydol</button>
-                <button class="btn btn-secondary"><a asp-action="Login" class="link-light" style="text-decoration:none">Oturum Aç</a></button>
+                <button class="btn btn-light"><a asp-action="Login" class="link-dark" style="text-decoration:none">Oturum Aç</a></button>
             </div>
         </div>
         <div id="result"></div>

@@ -66,7 +66,6 @@
 
             var landId = $('#landId').val();
 
-            // Get the land details
             $.ajax({
                 url: ApiBaseUrl + "Lands/" + landId,
                 method: 'GET',
@@ -109,10 +108,10 @@
                 blockNumber: $('#blocknumber').val(),
                 parcelNumber: $('#parcelnumber').val(),
                 isSold: $('#isSold').is(':checked'),
-                categoryID: 1, // İlan kategorisi
-                created: $('#created').val(), // Mevcut oluşturulma tarihi
-                updated: new Date().toISOString(), // Güncellenme tarihi
-                appUserId: uid // Kullanıcı kimliği
+                categoryID: 1,
+                created: $('#created').val(),
+                updated: new Date().toISOString(),
+                appUserId: uid
             };
 
             $.ajax({

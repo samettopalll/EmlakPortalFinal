@@ -33,7 +33,7 @@
                     <input type="text" class="form-control" id="Location" name="Location" required>
                 </div>
                 <div class="form-group">
-                    <label for="BlockNumber">Blok Numarası</label>
+                    <label for="BlockNumber">Ada Numarası</label>
                     <input type="number" class="form-control" id="BlockNumber" name="BlockNumber" required>
                 </div>
                 <div class="form-group">
@@ -101,7 +101,7 @@
                 'Authorization': 'Bearer ' + token
             },
             success: function (response) {
-                alert("Land listing added successfully.");
+                alert("Arsa İlanı Başarıyla Eklendi.");
                 window.location.href = "/Home/MyListings";
             },
             error: function (xhr, status, error) {

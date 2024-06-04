@@ -1,5 +1,4 @@
 ﻿
-
 var token = localStorage.getItem("token")
 var userRoles = [];
 if (token == null) {
@@ -7,6 +6,7 @@ if (token == null) {
     $(".NotLogined").show();
     $(".MyListings").hide();
     $(".Logined").hide();
+    $(".AdminCheck").hide();
 
 } else {
     $(".NotLogined").hide();
@@ -17,8 +17,11 @@ if (token == null) {
     userRoles = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
     $("#UserName").html(username);
-
-    console.log(userRoles);
+    if (userRoles.includes("Admin")) {
+        $(".AdminCheck").show();
+    } else {
+        $(".AdminCheck").hide();
+    }
 }
 
 
@@ -35,6 +38,5 @@ function parseJwt(token) {
 }
 $("#Logout").click(function () {
     localStorage.removeItem("token");
-    location.href = "AllListings";
 });
 

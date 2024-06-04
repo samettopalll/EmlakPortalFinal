@@ -60,11 +60,12 @@
 
                 var sqprice = (item.price / item.squareMeters).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
                 var formattedPrice = item.price.toLocaleString('tr-TR');
+                var formattedSq = item.squareMeters.toLocaleString('tr-TR');
                 var detailsHtml = `
                     <br><br><br>
                     <strong><p>İlan Sahibi: </strong>${username}</p>
                     <strong><p>Fiyat:</strong> ${formattedPrice} ₺</p>
-                    <strong><p>m²: </strong>${item.squareMeters}</p>
+                    <strong><p>m²: </strong>${formattedSq}</p>
                     <strong><p>m² Fiyatı: </strong>${sqprice} ₺</p>
                     <strong><p>Arsa Tipi:</strong> ${item.type}</p>
                     <strong><p>Konum:</strong> ${item.location}</p>

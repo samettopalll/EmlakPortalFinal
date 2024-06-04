@@ -18,18 +18,20 @@
         </div>
     </div>
     <hr />
-    <div class="row" id="propertyList">
-    </div>
+    <div class="row" id="propertyList"></div>
+    <nav aria-label="Page navigation example" class="mt-4">
+        <ul class="pagination justify-content-center" id="paginationContainer"></ul>
+    </nav>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             var ApiBaseUrl = "@ViewBag.ApiBaseUrl";
-            var allProperties;
-            var imagesData;
-
-            getAllProperties();
+            var allProperties = [];
+            var imagesData = [];
+            var currentPage = 1;
+            var pageSize = 3;
 
             function getAllProperties() {
                 $.when(
@@ -44,19 +46,31 @@
                         contentType: "application/json"
                     })
                 ).done(function (propertiesResponse, imagesResponse) {
-                    allProperties = propertiesResponse[0];
+                    var propertiesData = propertiesResponse[0];
                     imagesData = imagesResponse[0];
-                    renderProperties(allProperties, imagesData);
+
+                    var filteredPropertiesData = propertiesData.filter(function (item) {
+                        return !item.isSold;
+                    });
+
+                    allProperties = filteredPropertiesData;
+
+                    renderProperties(allProperties, imagesData, currentPage);
+                    renderPagination(allProperties.length, currentPage, pageSize);
                 }).fail(function () {
                     console.log("Error in fetching property data");
                 });
+
             }
 
-            function renderProperties(properties, images) {
+            function renderProperties(properties, images, page) {
                 $("#propertyList").empty();
+                var start = (page - 1) * pageSize;
+                var end = start + pageSize;
+                var pageProperties = properties.slice(start, end);
                 var cards = '';
 
-                $.each(properties, function (i, property) {
+                $.each(pageProperties, function (i, property) {
                     var bg = property.isSold ? 'bg-success' : 'bg-danger';
                     var propertyID = property.id;
                     var relatedImages = images.filter(img => img.propertyID === propertyID);
@@ -82,7 +96,7 @@
                                 var imageBase64 = response.imageUrl;
                                 card += `
                                         <div class="carousel-item ${activeClass}">
-                                            <img src="${imageBase64}" class="d-block w-100 h-100" alt="${property.title}">
+                                            <img src="${imageBase64}" class="card-img-top" alt="${property.title}">
                                         </div>
                                     `;
                             },
@@ -100,9 +114,12 @@
                                     </div>
                                     <div class="card-body">
                                         <h5 class="card-title"><strong><a href="/Home/PropertyDetails/${propertyID}" style=" text-decoration: none;color: inherit;">${property.title}</a></strong></h5>
-                                        <strong><p class="card-text">Fiyat: </strong>${formattedPrice} ₺</p>
+                                        <strong><p class="card-text">Türü: </strong>${property.type}</p>
+                                        <strong><p class="card-text">Metrekaresi: </strong>${property.squareMeters}</p>
+                                        <strong><p class="card-text">Fiyatı: </strong>${formattedPrice} ₺</p>
+                                        <strong><p class="card-text">Oda Sayısı: </strong>${property.roomCount}+1</p>
+                                        <strong><p class="card-text">Konumu: </strong>${property.location}</p>
                                         <strong><p class="card-text">Kayıt Tarihi: </strong>${formatDate(property.created)}</p>
-                                        <strong><p class="card-text">Düzenleme Tarihi: </strong>${formatDate(property.updated)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -111,6 +128,27 @@
                         $("#propertyList").html(cards);
                     });
                 });
+            }
+
+            function renderPagination(totalItems, currentPage, pageSize) {
+                var totalPages = Math.ceil(totalItems / pageSize);
+                var paginationHtml = '';
+
+                for (var i = 1; i <= totalPages; i++) {
+                    paginationHtml += `
+                                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                                </li>
+                            `;
+                }
+
+                $('#paginationContainer').html(paginationHtml);
+            }
+
+            window.changePage = function (page) {
+                currentPage = page;
+                renderProperties(allProperties, imagesData, page);
+                renderPagination(allProperties.length, page, pageSize);
             }
 
             function formatDate(dateString) {
@@ -132,23 +170,29 @@
                 filterProperties();
             });
 
-            $('#searchInput').on('keyup', function () {
-                var searchTerm = $(this).val().toLowerCase();
-                filterProperties(searchTerm);
+        $('#searchInput').on('keyup', function () {
+            var searchTerm = $(this).val().toLowerCase();
+            filterProperties(searchTerm);
+        });
+
+        function filterProperties(searchTerm = '') {
+            var activeFilter = $('.filter-option.active').data('type');
+
+            var filteredProperties = allProperties.filter(function (property) {
+                var matchesFilter = activeFilter ? property.type === activeFilter : true;
+                var matchesSearch = property.title.toLowerCase().includes(searchTerm);
+                return matchesFilter && matchesSearch;
             });
 
-            function filterProperties(searchTerm = '') {
-                var activeFilter = $('.filter-option.active').data('type');
+            currentPage = 1;
+            renderProperties(filteredProperties, imagesData, currentPage);
+            renderPagination(filteredProperties.length, currentPage, pageSize);
+        }
 
-                var filteredProperties = allProperties.filter(function (property) {
-                    var matchesFilter = activeFilter ? property.type === activeFilter : true;
-                    var matchesSearch = property.title.toLowerCase().includes(searchTerm);
-                    return matchesFilter && matchesSearch;
-                });
+        getAllProperties();
 
-                renderProperties(filteredProperties, imagesData);
-            }
+    });
 
-        });;
-    </script>
+
+</script>
 }

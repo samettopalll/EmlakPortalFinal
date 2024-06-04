@@ -45,6 +45,26 @@ namespace EmlakPortal.Controllers
             return userDto;
         }
 
+        [HttpGet]
+        public UserDto GetByName(string name)
+        {
+            var user = _userManager.Users.Where(s => s.UserName == name).SingleOrDefault();
+            var userDto = _mapper.Map<UserDto>(user);
+            return userDto;
+        }
+        [HttpGet]
+        public async Task<IEnumerable<string>> GetRolesByUserId(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles;
+        }
+
         [HttpPost]
         public async Task<ResultDto> Add(RegisterDto dto)
         {
@@ -81,6 +101,71 @@ namespace EmlakPortal.Controllers
             return Ok(new { adminCount });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> MakeAdmin(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Kullanıcı bulunamadı.");
+            }
+
+            var addAdminResult = await _userManager.AddToRoleAsync(user, "Admin");
+            if (!addAdminResult.Succeeded)
+            {
+                return BadRequest(addAdminResult.Errors);
+            }
+
+            var removeUserResult = await _userManager.RemoveFromRoleAsync(user, "Uye");
+            if (!removeUserResult.Succeeded)
+            {
+                return BadRequest(removeUserResult.Errors);
+            }
+
+            return Ok("Kullanıcı admin yapıldı ve üye rolü kaldırıldı.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MakeUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Kullanıcı bulunamadı.");
+            }
+
+            var addUyeResult = await _userManager.AddToRoleAsync(user, "Uye");
+            if (!addUyeResult.Succeeded)
+            {
+                return BadRequest(addUyeResult.Errors);
+            }
+
+            var removeAdminResult = await _userManager.RemoveFromRoleAsync(user, "Admin");
+            if (!removeAdminResult.Succeeded)
+            {
+                return BadRequest(removeAdminResult.Errors);
+            }
+
+            return Ok("Kullanıcı üye yapıldı ve admin rolü kaldırıldı.");
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Kullanıcı bulunamadı.");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok("Kullanıcı silindi.");
+        }
 
         [HttpPost]
         public async Task<ResultDto> SignIn(LoginDto dto)
