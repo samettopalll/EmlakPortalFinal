@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EmlakPortal\EmlakPortal.csproj" />
+    <ProjectReference Include="..\EmlakPortal\EmlakPortal.API.csproj" />
   </ItemGroup>
 
 </Project>
